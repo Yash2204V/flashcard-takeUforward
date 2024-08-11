@@ -20,7 +20,7 @@ const FlashcardList = () => {
         setCurrentIndex((currentIndex - 1 + flashcards.length) % flashcards.length);
     };
 
-    if (flashcards.length === 0) return <p>Loading...</p>;
+    if (flashcards.length === 0) return <p className='text-zinc-400 text-sm p-4'>Loading...</p>;
 
     return (
         <div>
