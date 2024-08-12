@@ -1,39 +1,42 @@
-const express = require('express');
-const mysql = require('mysql');
+import mysql from "mysql2/promise";
+import express from "express";
+
 const app = express();
+let db;
 
-const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'flashcards_db'
-});
+async function connectDB() {
+    try {
+        db = await mysql.createConnection({
+            host: 'localhost',
+            user: 'root',
+            password: 'qwerty@1234',
+            database: 'flashcard_db',
+        });
+        console.log('Connected to the flashcard_db database.');
+    } catch (err) {
+        console.error('Error connecting to the database:', err.code);
+        console.error('Error details:', err);
+    }
+}
 
-db.connect((err) => {
-    if (err) throw err;
-    console.log('Connected to database');
-});
+connectDB();
 
 app.use(express.json());
 
-app.get('/flashcards', (req, res) => {
-    const query = 'SELECT * FROM flashcards';
-    db.query(query, (err, results) => {
-        if (err) throw err;
-        res.json(results);
-    });
-});
 
-app.post('/flashcards', (req, res) => {
+app.post('/flashcard', async (req, res) => {
     const { question, answer } = req.body;
-    const query = 'INSERT INTO flashcards (question, answer) VALUES (?, ?)';
-    db.query(query, [question, answer], (err, result) => {
-        if (err) throw err;
-        res.send('Flashcard added successfully!');
-    });
-});
+    console.log('Received POST request with data:', { question, answer });
 
-// Define routes for update and delete here
+    try {
+        const [result] = await db.query('INSERT INTO flashcard (question, answer) VALUES (?, ?)', [question, answer]);
+        console.log('Flashcard added successfully!');
+        res.status(201).json({ id: result.insertId });
+    } catch (err) {
+        console.error('Error inserting flashcard:', err.message);
+        res.status(500).json({ error: err.message });
+    }
+});
 
 app.listen(3000, () => {
     console.log('Server started on port 3000');

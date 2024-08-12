@@ -7,7 +7,7 @@ const FlashcardList = () => {
 
     useEffect(() => {
         // Fetch flashcards from the backend API
-        fetch('/flashcards')
+        fetch('/flashcard')
             .then((res) => res.json())
             .then((data) => setFlashcards(data));
     }, []);
@@ -23,7 +23,7 @@ const FlashcardList = () => {
     if (flashcards.length === 0) return <p className='text-zinc-400 text-sm p-4'>Loading...</p>;
 
     return (
-        <div>
+        <div className=''>
             <Flashcard
                 question={flashcards[currentIndex].question}
                 answer={flashcards[currentIndex].answer}
