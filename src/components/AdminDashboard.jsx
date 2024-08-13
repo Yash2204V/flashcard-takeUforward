@@ -7,11 +7,10 @@ const AdminDashboard = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         console.log('Submitting:', { question, answer });
 
         try {
-            const response = await fetch('/flashcard', {
+            const response = await fetch('http://localhost:3000/flashcard', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -22,7 +21,7 @@ const AdminDashboard = () => {
             console.log('Response status:', response.status);
 
             if (response.ok) {
-                setMessage('Flashcard added successfully!');
+                setMessage('Flashcard added successfully! Please refresh the page.');
                 setQuestion('');
                 setAnswer('');
             } else if (response.status === 404) {

@@ -2,38 +2,52 @@ import React, { useState, useEffect } from 'react';
 import Flashcard from './Flashcard';
 
 const FlashcardList = () => {
-    const [flashcards, setFlashcards] = useState([]);
-    const [currentIndex, setCurrentIndex] = useState(0);
+  const [flashcard, setFlashcards] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-    useEffect(() => {
-        // Fetch flashcards from the backend API
-        fetch('/flashcard')
-            .then((res) => res.json())
-            .then((data) => setFlashcards(data));
-    }, []);
+  useEffect(() => {
+    fetch('http://localhost:3000/flashcard')
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log('Fetched flashcards:', data); 
+        setFlashcards(data);
+      })
+      .catch((error) => {
+        console.error('Error fetching flashcards:', error);
+      });
+  }, []);
 
-    const nextFlashcard = () => {
-        setCurrentIndex((currentIndex + 1) % flashcards.length);
-    };
+  if (flashcard.length === 0) return <p className="text-gray-400 text-xl mt-10">Loading...</p>;
 
-    const prevFlashcard = () => {
-        setCurrentIndex((currentIndex - 1 + flashcards.length) % flashcards.length);
-    };
-
-    if (flashcards.length === 0) return <p className='text-zinc-400 text-sm p-4'>Loading...</p>;
-
-    return (
-        <div className=''>
-            <Flashcard
-                question={flashcards[currentIndex].question}
-                answer={flashcards[currentIndex].answer}
-            />
-            <div className="navigation">
-                <button onClick={prevFlashcard}>Previous</button>
-                <button onClick={nextFlashcard}>Next</button>
-            </div>
+  return (
+    <div className="flex flex-col items-baseline justify-start mt-10">
+      <div className="bg-white shadow-lg rounded-lg p-6 pb-20 max-w-lg  relative">
+        <Flashcard 
+          question={flashcard[currentIndex].question} 
+          answer={flashcard[currentIndex].answer} 
+        />
+        <div className="absolute inset-x-0 bottom-4 flex justify-between px-4">
+          <button 
+            onClick={() => setCurrentIndex((currentIndex - 1 + flashcard.length) % flashcard.length)} 
+            className="px-6 py-3 bg-indigo-600 text-white rounded-full shadow-lg hover:bg-indigo-700 transition-transform transform hover:scale-105"
+          >
+            Previous
+          </button>
+          <button 
+            onClick={() => setCurrentIndex((currentIndex + 1) % flashcard.length)} 
+            className="px-6 py-3 bg-indigo-600 text-white rounded-full shadow-lg hover:bg-indigo-700 transition-transform transform hover:scale-105"
+          >
+            Next
+          </button>
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default FlashcardList;
